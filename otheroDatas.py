@@ -1,4 +1,9 @@
-f = open('kihuFixedLite.txt')
+# データは
+#http://meipuru-344.hatenablog.com/entry/2017/11/27/205448
+# ここから取得。
+# 以下の処理でさらに使いやすいように変換する。
+
+f = open('kihuFixed.txt')
 lines = f.readlines()
 f.close()
 fixedLines = []

@@ -33,7 +33,6 @@ def train(args: str, model: Net, device: torch.device, data: torch.tensor, targe
     loss.backward()
     optimizer.step()
 
-
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
@@ -117,6 +116,9 @@ def main():
     print('correct: ' + str(correct) + ' / ' + str(trials))
     print('Rating' + str(correct / trials))
 
+    # x = index % 8
+    # y = int(index / 8)
+    #でインデックスとして取ってるデータを座標に変換可能。
 
 
 if __name__ == '__main__':
