@@ -7,8 +7,6 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.autograd import Variable
-
-
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -116,6 +114,9 @@ def main():
     print('correct: ' + str(correct) + ' / ' + str(trials))
     print('Rating' + str(correct / trials))
 
+    if args.save_model:
+        torch.save(model.state_dict(), "othero_NN.pt")
+
     # x = index % 8
     # y = int(index / 8)
     #でインデックスとして取ってるデータを座標に変換可能。
@@ -123,4 +124,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
