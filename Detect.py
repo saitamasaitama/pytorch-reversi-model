@@ -8,7 +8,6 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 from torch.autograd import Variable
 '''使用例
-
 import Detect
 
 board = [
