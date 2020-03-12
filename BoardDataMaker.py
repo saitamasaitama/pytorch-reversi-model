@@ -19,11 +19,10 @@ for line in lines:
         me = 2
         you = 1
     for i in range(64):
-        if(int(l[i]) == 1):
+        if(int(l[i]) == me):
             boardData[int(i / 8)][int(i % 8)] = 1
-        elif(int(l[i]) == 2):
+        elif(int(l[i]) == you):
             boardData[int(i / 8)][int(i % 8)] = -1
-    print(boardData)
     for b in boardData:
         fixedLines.append(', '.join(map(str, b)))
         #print(b)

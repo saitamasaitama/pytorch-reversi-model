@@ -45,6 +45,17 @@ class MaxLayer(nn.Module):
         return torch.tensor([xpos, ypos], dtype=torch.int)
 
 class OutLayer(nn.Module):
+    def __init__(self):
+        super(OutLayer, self).__init__()
+        self.bw = BWClassify()
+        self.net = Net()
+    def forward(self, x):
+        x = self.bw(x)
+        out = self.net(x)
+        return out
+
+'''
+class OutLayer(nn.Module):
     def __init__(self, model):
         super(OutLayer, self).__init__()
         self.model = model
@@ -53,6 +64,7 @@ class OutLayer(nn.Module):
         maxLayer = MaxLayer()
         x = self.model(bwClassify(x))
         return maxLayer(x)
+'''
 
 def train(model: Net, device: torch.device, data: torch.tensor, target: torch.tensor, optimizer: optim.Adadelta, epoch: int):
     
@@ -73,9 +85,9 @@ def main():
     #device = torch.device("cuda")
 
 
-    model = Net().to(device)
-    optimizer = optim.Adadelta(model.parameters(), lr=1.0)
-
+    model = OutLayer().to(device)
+    optimizer = optim.Adadelta(model.net.parameters(), lr=1.0)
+   
     scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
 
     DataPath = "kihuData2.txt"
@@ -97,8 +109,7 @@ def main():
             if lineNum == 8:
                 lineNum = 0
                 Datas.append(boardData)
-    for i in range(10):
-        print(Datas[i])
+
 
     Targets = []
     with open(TargetPath) as f:
@@ -114,15 +125,11 @@ def main():
     datas = datas.to(device)
 
     targets = targets.to(device)
-    bwClassify = BWClassify()
-    bwClassify = bwClassify.to(device)
-    dataBW = bwClassify(datas)
-    dataBW = dataBW.to(device)
 
-    epochs = 10
+    epochs = 100
     for epoch in range(1, epochs + 1):
         print("epoch: " + str(epoch))
-        train(model, device, dataBW, targets, optimizer, epoch)
+        train(model, device, datas, targets, optimizer, epoch)
         scheduler.step()
 
     correct = 0
@@ -130,25 +137,15 @@ def main():
     for i in range(trials):
         testData = torch.tensor([Datas[i]], dtype=torch.float32)
         testData = testData.to(device)
-        testdataBW = bwClassify(testData)
-        testdataBW = testdataBW.to(device)
-        ans = model.forward(testdataBW) # 現状のまま実用するなら、この値を上から順に合法手か探す。
+        ans = model.forward(testData) # 現状のまま実用するなら、この値を上から順に合法手か探す。
         ansMax = ans.argmax(dim=1, keepdim=True)
         Tar = Targets[i]
         if(ansMax == Tar):
             correct += 1
     print('correct: ' + str(correct) + ' / ' + str(trials))
     print('Rating' + str(correct / trials))
-    outLayer = OutLayer(model)
-    outLayer.eval()
-    trials = 10
-    for i in range(trials):
-        testData = torch.tensor([Datas[i]], dtype=torch.float32)
-        testData = testData.to(device)
-        ans = outLayer.forward(testData) # 現状のまま実用するなら、この値を上から順に合法手か探す。
-        print(Datas[i])
-        print(ans)
-    torch.save(outLayer.state_dict(), "othero_NN_88.pt")
+
+    torch.save(model.state_dict(), "othero_NN_88.pt")
 
     # x = index % 8
     # y = int(index / 8)
