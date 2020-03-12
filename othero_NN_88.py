@@ -35,15 +35,6 @@ class BWClassify(nn.Module):
         output = x
         return output
 
-class MaxLayer(nn.Module):
-    def __init__(self):
-        super(MaxLayer, self).__init__()
-    def forward(self, x):
-        maxP = x.argmax()
-        xpos = maxP % 8
-        ypos = maxP // 8
-        return torch.tensor([xpos, ypos], dtype=torch.int)
-
 class OutLayer(nn.Module):
     def __init__(self):
         super(OutLayer, self).__init__()
@@ -53,18 +44,6 @@ class OutLayer(nn.Module):
         x = self.bw(x)
         out = self.net(x)
         return out
-
-'''
-class OutLayer(nn.Module):
-    def __init__(self, model):
-        super(OutLayer, self).__init__()
-        self.model = model
-    def forward(self, x):
-        bwClassify = BWClassify()
-        maxLayer = MaxLayer()
-        x = self.model(bwClassify(x))
-        return maxLayer(x)
-'''
 
 def train(model: Net, device: torch.device, data: torch.tensor, target: torch.tensor, optimizer: optim.Adadelta, epoch: int):
     
@@ -137,7 +116,7 @@ def main():
     for i in range(trials):
         testData = torch.tensor([Datas[i]], dtype=torch.float32)
         testData = testData.to(device)
-        ans = model.forward(testData) # 現状のまま実用するなら、この値を上から順に合法手か探す。
+        ans = model.forward(testData)
         ansMax = ans.argmax(dim=1, keepdim=True)
         Tar = Targets[i]
         if(ansMax == Tar):
@@ -146,11 +125,6 @@ def main():
     print('Rating' + str(correct / trials))
 
     torch.save(model.state_dict(), "othero_NN_88.pt")
-
-    # x = index % 8
-    # y = int(index / 8)
-    #でインデックスとして取ってるデータを座標に変換可能。
-
 
 if __name__ == '__main__':
     main()

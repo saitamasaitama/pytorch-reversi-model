@@ -12,17 +12,17 @@ for line in lines:
     l = line.split()
     boardData = [[0 for i in range(8)] for j in range (8)]
     target = (int(l[64]) - 1) * 8 + int(l[65]) - 1 
-    if(l[66] == 'W'):
+    me = 2
+    you = 1
+    if l[66] == 'W':
         me = 1
         you = 2
-    else:
-        me = 2
-        you = 1
+    
     for i in range(64):
-        if(int(l[i]) == me):
-            boardData[int(i / 8)][int(i % 8)] = 1
-        elif(int(l[i]) == you):
-            boardData[int(i / 8)][int(i % 8)] = -1
+        if int(l[i]) == me:
+            boardData[i // 8][i % 8] = 1
+        elif int(l[i]) == you:
+            boardData[i // 8][i % 8] = -1
     for b in boardData:
         fixedLines.append(', '.join(map(str, b)))
         #print(b)
