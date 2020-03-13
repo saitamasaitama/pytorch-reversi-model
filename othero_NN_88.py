@@ -54,6 +54,7 @@ def train(model: Net, device: torch.device, data: torch.tensor, target: torch.te
 
     loss = F.nll_loss(output, target) # outputはone-hotの形式、targetは正解値の形式で比較。
     loss.backward()
+    print(loss)
     optimizer.step()
 
 def main():
@@ -65,7 +66,7 @@ def main():
 
 
     model = OutLayer().to(device)
-    optimizer = optim.Adadelta(model.net.parameters(), lr=1.0)
+    optimizer = optim.Adam(model.net.parameters(), lr=0.01)
    
     scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
 
@@ -97,8 +98,8 @@ def main():
 
     datas = torch.tensor(Datas, dtype=torch.float32)
     targets = torch.tensor(Targets, dtype=torch.int64)
-    datas = datas[: 100]
-    targets = targets[: 100] # 10000件の学習。バッチ指定なしの状態では多すぎるとメモリ不足になる
+    datas = datas[: 50000]
+    targets = targets[: 50000] # 10000件の学習。バッチ指定なしの状態では多すぎるとメモリ不足になる
 
 
     datas = datas.to(device)
@@ -107,7 +108,8 @@ def main():
 
     epochs = 100
     for epoch in range(1, epochs + 1):
-        print("epoch: " + str(epoch))
+        if epoch%1000 == 0:
+            print("epoch: " + str(epoch))
         train(model, device, datas, targets, optimizer, epoch)
         scheduler.step()
 
